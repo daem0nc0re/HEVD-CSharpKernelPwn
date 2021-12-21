@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArbitraryReadWrite", "Arbit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArbitraryWrite", "ArbitraryWrite\ArbitraryWrite.csproj", "{FADC67ED-BEE2-4875-9BD0-101C9B084A1C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArbitraryIncrement", "ArbitraryIncrement\ArbitraryIncrement.csproj", "{3D31131A-2ECF-4A7B-A076-6F3F22C66B4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -33,6 +35,10 @@ Global
 		{FADC67ED-BEE2-4875-9BD0-101C9B084A1C}.Debug|x64.Build.0 = Debug|x64
 		{FADC67ED-BEE2-4875-9BD0-101C9B084A1C}.Release|x64.ActiveCfg = Release|x64
 		{FADC67ED-BEE2-4875-9BD0-101C9B084A1C}.Release|x64.Build.0 = Release|x64
+		{3D31131A-2ECF-4A7B-A076-6F3F22C66B4F}.Debug|x64.ActiveCfg = Debug|x64
+		{3D31131A-2ECF-4A7B-A076-6F3F22C66B4F}.Debug|x64.Build.0 = Debug|x64
+		{3D31131A-2ECF-4A7B-A076-6F3F22C66B4F}.Release|x64.ActiveCfg = Release|x64
+		{3D31131A-2ECF-4A7B-A076-6F3F22C66B4F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

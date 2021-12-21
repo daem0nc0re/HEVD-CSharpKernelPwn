@@ -359,7 +359,7 @@ namespace WriteNull
             IntPtr hNewThread = CreateRemoteThread(hProcess, IntPtr.Zero, 0,
                 Buffer, IntPtr.Zero, 0, IntPtr.Zero);
 
-            if (Buffer == IntPtr.Zero)
+            if (hNewThread == IntPtr.Zero)
             {
                 Console.WriteLine("[-] Failed to execute shellcode");
                 Console.WriteLine("    |-> Error Code: {0}", Marshal.GetLastWin32Error());

