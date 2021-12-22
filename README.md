@@ -33,6 +33,7 @@ To build codes, open [HEVD_Win10x64.sln](./HEVD_Win10x64/HEVD_Win10x64.sln) and 
 
 | Project Name| Description |
 | :--- | :--- |
+| [ArbitraryIncrement](./HEVD_Win10x64/ArbitraryIncrement) | Writeup for Arbitrary Increment vulnerablity. |
 | [ArbitraryReadWrite](./HEVD_Win10x64/ArbitraryReadWrite) | Writeup for Arbitrary Read and Write vulnerablity. |
 | [ArbitraryWrite](./HEVD_Win10x64/ArbitraryWrite) | Writeup for Arbitrary Overwrite vulnerablity. |
 | [InjectLib](./HEVD_Win10x64/InjectLib) | Sample DLL for Insecure Kernel Resource Access vulnerability. This DLL attempts to add `hevdtest` user with password `Password123!` and add `hevdtest` to `Administrators` group. |
